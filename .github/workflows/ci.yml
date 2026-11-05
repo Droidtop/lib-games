@@ -87,9 +87,27 @@ jobs:
         with:
           path: lib
           persist-credentials: false
+      - name: The droidtop-agent branch this change goes with
+        id: pair
+        shell: bash
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          ref=main
+          # A breaking change needs droidtop-agent's half to build: its same-named ci/ branch, or the branch named
+          # in .github/users-build-ref while that half has not landed (as lib-sync's job does).
+          named="$(cat lib/.github/users-build-ref 2>/dev/null | tr -d '[:space:]' || true)"
+          if [[ "$BRANCH" == ci/* ]] && git ls-remote --exit-code --heads https://github.com/Droidtop/droidtop-agent "refs/heads/$BRANCH" >/dev/null; then
+            ref="$BRANCH"
+          elif [[ "$named" == ci/* ]] && git ls-remote --exit-code --heads https://github.com/Droidtop/droidtop-agent "refs/heads/$named" >/dev/null; then
+            ref="$named"
+          fi
+          echo "droidtop-agent: $ref"
+          echo "ref=$ref" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: Droidtop/droidtop-agent
+          ref: ${{ steps.pair.outputs.ref }}
           path: agent
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87 # stable
@@ -98,6 +116,23 @@ jobs:
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
         with:
           workspaces: agent
+      # A patch whose version differs from the one in droidtop-agent's Cargo.lock is dropped with only a warning,
+      # and cargo builds the pinned tag instead (Droidtop/tracker#798). So the lock is moved to this commit first,
+      # and the step fails if cargo still says the patch was not used.
+      - name: Take games-scan from this commit
+        working-directory: agent
+        shell: bash
+        run: |
+          set -eu
+          cargo --config 'patch."https://github.com/Droidtop/lib-games".games-scan.path="../lib/crates/scan"' \
+            update -p games-scan
+          cargo --config 'patch."https://github.com/Droidtop/lib-games".games-scan.path="../lib/crates/scan"' \
+            metadata --format-version 1 >/dev/null 2>patch.log || { cat patch.log; exit 1; }
+          cat patch.log
+          if grep -q 'was not used in the crate graph' patch.log; then
+            echo "::error::games-scan from this commit is not used; droidtop-agent still builds its pinned tag"
+            exit 1
+          fi
       - name: Build and test droidtop-agent against this commit
         working-directory: agent
         run: |
