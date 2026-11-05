@@ -48,24 +48,9 @@ pub fn slug(title: &str) -> String {
         }
     }
     if out.is_empty() {
-        return uuid5_url(title);
+        return uuid::Uuid::new_v5(&uuid::Uuid::NAMESPACE_URL, title.as_bytes()).to_string();
     }
     out
-}
-
-/// RFC 4122's version 5 UUID of `name` in the URL namespace
-/// (`6ba7b811-9dad-11d1-80b4-00c04fd430c8`), as Python's
-/// `str(uuid.uuid5(uuid.NAMESPACE_URL, name))`.
-fn uuid5_url(name: &str) -> String {
-    const NAMESPACE_URL: [u8; 16] = [0x6b, 0xa7, 0xb8, 0x11, 0x9d, 0xad, 0x11, 0xd1, 0x80, 0xb4, 0x00, 0xc0, 0x4f, 0xd4, 0x30, 0xc8];
-    let mut sha = sha1_smol::Sha1::new();
-    sha.update(&NAMESPACE_URL);
-    sha.update(name.as_bytes());
-    let mut b = sha.digest().bytes();
-    b[6] = (b[6] & 0x0f) | 0x50;
-    b[8] = (b[8] & 0x3f) | 0x80;
-    let hex: String = b[..16].iter().map(|x| format!("{x:02x}")).collect();
-    format!("{}-{}-{}-{}-{}", &hex[0..8], &hex[8..12], &hex[12..16], &hex[16..20], &hex[20..32])
 }
 
 /// The key of a game with no store id: `title2:` and [`slug`].

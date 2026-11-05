@@ -52,10 +52,10 @@ serde_yaml = "0.9"
 ureq = "2"
 rusqlite = { version = "0.32", features = ["bundled"] }
 regex = "1"
-# Lutris's title slug (Droidtop/tracker#870): NFD before dropping what is not ASCII, and SHA-1 for the UUID-5 Lutris names
+# Lutris's title slug (Droidtop/tracker#870): NFD before dropping what is not ASCII, and the UUID-5 Lutris names
 # a title with no Latin letters by.
 unicode-normalization = "0.1"
-sha1_smol = "1"
+uuid = { version = "1", default-features = false, features = ["v5", "std"] }
 dirs = "5"
 gethostname = "0.5"
 roxmltree = "0.20"

@@ -23,7 +23,7 @@ rusqlite.workspace = true
 regex.workspace = true
 # The one title key, Lutris's slug (titles.rs).
 unicode-normalization.workspace = true
-sha1_smol.workspace = true
+uuid.workspace = true
 # Which engine a folder was made with (Droidtop/tracker#867: detection is its own library).
 engines-detect = { git = "https://github.com/Droidtop/lib-engines", tag = "v0.1.0" }
 dirs.workspace = true
