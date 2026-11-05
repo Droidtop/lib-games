@@ -45,6 +45,7 @@ pub mod lutris;
 pub mod prefixes;
 mod roms;
 mod steam;
+pub mod titles;
 pub mod vdf;
 
 /// A Wine or Proton prefix a game runs in on this computer.
@@ -133,13 +134,15 @@ impl Scan {
     pub fn join(&mut self, others: &[Found]) {
         let folder = |p: &Path| p.to_string_lossy().replace('\\', "/").trim_end_matches('/').to_lowercase();
         for other in others {
+            let mut other = other.clone();
+            titles::rekey(&mut other);
             let same_key = self.games.iter().any(|f| f.game.key == other.game.key);
             let same_folder = other.base.as_deref().is_some_and(|b| {
                 let b = folder(b);
                 self.games.iter().any(|f| f.base.as_deref().is_some_and(|fb| folder(fb) == b))
             });
             if !same_key && !same_folder {
-                self.games.push(other.clone());
+                self.games.push(other);
             }
         }
     }
@@ -191,7 +194,8 @@ pub fn scan(settings: &Options) -> Scan {
                 if let Some(report) = out.sources.last_mut() {
                     report.count = found.len();
                 }
-                for f in found {
+                for mut f in found {
+                    titles::rekey(&mut f);
                     // The first source to name a game keeps it: a store's own
                     // record beats a folder walk of the same install.
                     by_key.entry(f.game.key.clone()).or_insert(f);

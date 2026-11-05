@@ -3,6 +3,20 @@
 All notable changes to lib-games. Versions follow [Semantic Versioning](https://semver.org/)
 (in 0.x, only a new minor version may break the interface; CI's `semver` job enforces it).
 
+## [0.3.0]
+
+### Changed
+- **Keys:** a game with no store id is keyed `title2:` and its title's Lutris slug, the one title key on every device
+  (Droidtop/tracker#870; the owner, 2026-11-05: "letters and digits only, but with space-to-hyphen conversion.
+  Lutris's standard"). "Being a DIK" is `title2:being-a-dik`. Its old key (`title:being a dik`) is in `Found::aliases`,
+  so a program links what it stored under it. Lutris's marks use the new key too. ROM keys (`rom:<system>/<words>`) do
+  not change. No signature changes, but a program that takes this without linking the aliases sees each title-keyed
+  game twice, hence a new minor version.
+
+### Added
+- `titles`: `slug` (Lutris's `slugify`, lutris/lutris `lutris/util/strings.py` at 4d9939e468de, re-implemented and
+  tested against it), `title_key` and `rekey`. droidtop's `TitleKeys.slug` is the same function.
+
 ## [0.2.0]
 
 ### Changed

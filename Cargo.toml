@@ -3,7 +3,7 @@ resolver = "2"
 members = ["crates/scan"]
 
 [workspace.package]
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 license = "GPL-3.0-only"
 repository = "https://github.com/Droidtop/lib-games"
@@ -52,6 +52,10 @@ serde_yaml = "0.9"
 ureq = "2"
 rusqlite = { version = "0.32", features = ["bundled"] }
 regex = "1"
+# Lutris's title slug (Droidtop/tracker#870): NFD before dropping what is not ASCII, and SHA-1 for the UUID-5 Lutris names
+# a title with no Latin letters by.
+unicode-normalization = "0.1"
+sha1_smol = "1"
 dirs = "5"
 gethostname = "0.5"
 roxmltree = "0.20"
