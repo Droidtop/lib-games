@@ -129,7 +129,7 @@ jobs:
           cargo --config 'patch."https://github.com/Droidtop/lib-games".games-scan.path="../lib/crates/scan"' \
             metadata --format-version 1 >/dev/null 2>patch.log || { cat patch.log; exit 1; }
           cat patch.log
-          if grep -q 'was not used in the crate graph' patch.log; then
+          if grep -q 'patch `games-scan .* was not used in the crate graph' patch.log; then
             echo "::error::games-scan from this commit is not used; droidtop-agent still builds its pinned tag"
             exit 1
           fi
