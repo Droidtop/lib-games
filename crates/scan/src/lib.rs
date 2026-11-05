@@ -45,6 +45,7 @@ pub mod lutris;
 pub mod prefixes;
 mod roms;
 mod steam;
+pub mod titles;
 pub mod vdf;
 
 /// A Wine or Proton prefix a game runs in on this computer.
@@ -57,7 +58,11 @@ pub struct Prefix {
 }
 
 /// One game the scan found, with what save lookups need.
+///
+/// Made with [`Found::new`] outside this crate, never as a literal, so a new
+/// field is not a breaking change (Droidtop/tracker#867).
 #[derive(Debug, Clone, Serialize)]
+#[non_exhaustive]
 pub struct Found {
     pub game: ScannedGame,
     /// The game's folder.
@@ -68,6 +73,19 @@ pub struct Found {
     /// (`renpy`, `unity`...), when the folder says.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub engine: Option<String>,
+    /// The game's other keys: the ids this scanner, or an older one, also
+    /// knows it by. An Epic game is `epic:<CatalogItemId>` with its
+    /// `epic:<AppName>` here (Droidtop/tracker#871); a program links each to
+    /// `game.key` so what it stored under the old key stays the same game.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub aliases: Vec<String>,
+}
+
+impl Found {
+    /// A game with only its library entry; set the rest on the result.
+    pub fn new(game: ScannedGame) -> Found {
+        Found { game, base: None, prefix: None, engine: None, aliases: Vec::new() }
+    }
 }
 
 /// A program whose state the agent can read or sync with: launchers,
@@ -116,13 +134,15 @@ impl Scan {
     pub fn join(&mut self, others: &[Found]) {
         let folder = |p: &Path| p.to_string_lossy().replace('\\', "/").trim_end_matches('/').to_lowercase();
         for other in others {
+            let mut other = other.clone();
+            titles::rekey(&mut other);
             let same_key = self.games.iter().any(|f| f.game.key == other.game.key);
             let same_folder = other.base.as_deref().is_some_and(|b| {
                 let b = folder(b);
                 self.games.iter().any(|f| f.base.as_deref().is_some_and(|fb| folder(fb) == b))
             });
             if !same_key && !same_folder {
-                self.games.push(other.clone());
+                self.games.push(other);
             }
         }
     }
@@ -132,6 +152,14 @@ impl Scan {
     pub fn library(&self) -> Vec<ScannedGame> {
         self.games.iter().map(|g| g.game.clone()).chain(self.apps.iter().map(|a| a.to_library())).collect()
     }
+}
+
+/// The AppName Heroic names a game's settings file by: its `epic:<AppName>`
+/// alias when its key is Epic's catalog id (Droidtop/tracker#871), else the
+/// id in its key.
+fn heroic_app_name(f: &Found) -> Option<String> {
+    let alias = f.aliases.iter().find_map(|a| a.strip_prefix("epic:"));
+    alias.or_else(|| f.game.key.split_once(':').map(|(_, id)| id)).map(str::to_string)
 }
 
 /// One source of games: what it found, or why it could not read.
@@ -166,7 +194,8 @@ pub fn scan(settings: &Options) -> Scan {
                 if let Some(report) = out.sources.last_mut() {
                     report.count = found.len();
                 }
-                for f in found {
+                for mut f in found {
+                    titles::rekey(&mut f);
                     // The first source to name a game keeps it: a store's own
                     // record beats a folder walk of the same install.
                     by_key.entry(f.game.key.clone()).or_insert(f);
@@ -181,8 +210,8 @@ pub fn scan(settings: &Options) -> Scan {
     if !cfg!(windows) {
         let heroic = prefixes::heroic_dirs();
         for f in out.games.iter_mut().filter(|f| f.prefix.is_none() && f.game.install.launcher.as_deref() == Some("heroic")) {
-            if let Some((_, app)) = f.game.key.split_once(':') {
-                f.prefix = prefixes::heroic(&heroic, app);
+            if let Some(app) = heroic_app_name(f) {
+                f.prefix = prefixes::heroic(&heroic, &app);
             }
         }
     }
@@ -225,6 +254,7 @@ pub fn pc_game(key: String, title: String, base: Option<PathBuf>, launcher: &str
         base,
         prefix: None,
         engine: None,
+        aliases: Vec::new(),
     }
 }
 

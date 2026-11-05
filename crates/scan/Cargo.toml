@@ -21,6 +21,9 @@ serde_yaml.workspace = true
 rusqlite.workspace = true
 # The file-head rules of droidtop's engines database are regular expressions.
 regex.workspace = true
+# The one title key, Lutris's slug (titles.rs).
+unicode-normalization.workspace = true
+uuid.workspace = true
 # Which engine a folder was made with (Droidtop/tracker#867: detection is its own library).
 engines-detect = { git = "https://github.com/Droidtop/lib-engines", tag = "v0.1.1" }
 dirs.workspace = true

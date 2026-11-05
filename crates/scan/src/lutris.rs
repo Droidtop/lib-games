@@ -80,7 +80,7 @@ fn key_of(name: &str, service: Option<&str>, service_id: Option<String>) -> Stri
     match (service, service_id) {
         (Some(s @ ("steam" | "gog" | "epic" | "itch")), Some(id)) if !id.is_empty() => format!("{s}:{id}"),
         (Some("battlenet"), Some(id)) if !id.is_empty() => format!("battlenet:{id}"),
-        _ => title_key(name),
+        _ => crate::titles::title_key(name),
     }
 }
 
@@ -142,6 +142,6 @@ mod tests {
         assert_eq!(marks.len(), 2);
         assert_eq!(marks["gog:1207658924"]["favourite"], serde_json::json!(true));
         assert_eq!(marks["gog:1207658924"]["hidden"], serde_json::json!(false));
-        assert_eq!(marks[&title_key("Hidden Thing")]["hidden"], serde_json::json!(true));
+        assert_eq!(marks[&crate::titles::title_key("Hidden Thing")]["hidden"], serde_json::json!(true));
     }
 }

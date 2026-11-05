@@ -68,6 +68,7 @@ pub fn at(dir: &Path, listing: &Listing) -> Option<Vec<Found>> {
             base: Some(dir.to_path_buf()),
             prefix: None,
             engine: None,
+            aliases: Vec::new(),
         });
     }
     Some(out)
