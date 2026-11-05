@@ -164,6 +164,9 @@ mod tests {
         let keys: Vec<_> = found.iter().map(|f| (f.game.key.as_str(), f.aliases.clone())).collect();
         assert_eq!(keys, [("epic:Salt", vec![]), ("epic:a1b2c3", vec!["epic:Sugar".to_string()])]);
         assert_eq!(found[1].game.install.launcher.as_deref(), Some("heroic"));
+        // Heroic names a game's settings (its Wine prefix) by AppName, whatever the key.
+        assert_eq!(crate::heroic_app_name(&found[1]).as_deref(), Some("Sugar"));
+        assert_eq!(crate::heroic_app_name(&found[0]).as_deref(), Some("Salt"));
         fs::remove_dir_all(&dir).unwrap();
     }
 }

@@ -151,6 +151,14 @@ impl Scan {
     }
 }
 
+/// The AppName Heroic names a game's settings file by: its `epic:<AppName>`
+/// alias when its key is Epic's catalog id (Droidtop/tracker#871), else the
+/// id in its key.
+fn heroic_app_name(f: &Found) -> Option<String> {
+    let alias = f.aliases.iter().find_map(|a| a.strip_prefix("epic:"));
+    alias.or_else(|| f.game.key.split_once(':').map(|(_, id)| id)).map(str::to_string)
+}
+
 /// One source of games: what it found, or why it could not read.
 type Source = fn(&Options) -> Result<Vec<Found>, String>;
 
@@ -198,8 +206,8 @@ pub fn scan(settings: &Options) -> Scan {
     if !cfg!(windows) {
         let heroic = prefixes::heroic_dirs();
         for f in out.games.iter_mut().filter(|f| f.prefix.is_none() && f.game.install.launcher.as_deref() == Some("heroic")) {
-            if let Some((_, app)) = f.game.key.split_once(':') {
-                f.prefix = prefixes::heroic(&heroic, app);
+            if let Some(app) = heroic_app_name(f) {
+                f.prefix = prefixes::heroic(&heroic, &app);
             }
         }
     }
