@@ -3,6 +3,12 @@
 All notable changes to lib-games. Versions follow [Semantic Versioning](https://semver.org/)
 (0.x releases may change anything).
 
+## [0.1.2]
+
+### Changed
+- Built on lib-sync v0.1.1, as 0.1.1 meant to be. 0.1.1 was released with its pins unchanged (still lib-sync
+  v0.1.0), so it is the same as 0.1.0; use 0.1.2.
+
 ## [0.1.1]
 
 ### Changed

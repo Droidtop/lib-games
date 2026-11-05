@@ -397,7 +397,7 @@ dependencies = [
 
 [[package]]
 name = "games-scan"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "dirs",
  "engines-detect",
@@ -1196,8 +1196,8 @@ dependencies = [
 
 [[package]]
 name = "sync-core"
-version = "0.1.0"
-source = "git+https://github.com/Droidtop/lib-sync?tag=v0.1.0#c1ad61a0aacdeba490c58f5e2c292fcb8f322581"
+version = "0.1.1"
+source = "git+https://github.com/Droidtop/lib-sync?tag=v0.1.1#796d9dd7f28f49ff45064b2beb1af5732c5715e7"
 dependencies = [
  "boringtun",
  "chacha20poly1305",
