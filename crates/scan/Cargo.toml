@@ -12,7 +12,7 @@ name = "droidtop_agent_scan"
 path = "src/lib.rs"
 
 [dependencies]
-droidtop-agent-core = { package = "sync-core", git = "https://github.com/Droidtop/lib-sync", tag = "v0.1.2" }
+droidtop-agent-core = { package = "sync-core", git = "https://github.com/Droidtop/lib-sync", tag = "v0.1.6" }
 serde.workspace = true
 serde_json.workspace = true
 # Heroic's and Lutris's YAML game configs.
@@ -22,7 +22,7 @@ rusqlite.workspace = true
 # The file-head rules of droidtop's engines database are regular expressions.
 regex.workspace = true
 # Which engine a folder was made with (Droidtop/tracker#867: detection is its own library).
-engines-detect = { git = "https://github.com/Droidtop/lib-engines", tag = "v0.1.0" }
+engines-detect = { git = "https://github.com/Droidtop/lib-engines", tag = "v0.1.1" }
 dirs.workspace = true
 # Installed applications: Store package manifests (Windows) and bundles'
 # Info.plist (macOS, XML or binary). Both parsers are tested on every system.

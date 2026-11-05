@@ -3,6 +3,17 @@
 All notable changes to lib-games. Versions follow [Semantic Versioning](https://semver.org/)
 (in 0.x, only a new minor version may break the interface; CI's `semver` job enforces it).
 
+## [Unreleased]
+
+## [0.1.4]
+
+### Changed
+- Builds with Rust 1.85 (`rust-version` 1.89 → 1.85): Pythia builds these crates with Ubuntu's rustc-1.85, as
+  Launchpad does. 1.89 came from droidtop-agent b5e7094, only for std's `File::lock`, which lib-sync 0.1.6 no
+  longer needs. A new `msrv` CI job checks the workspace with 1.85, resolving dependencies to versions 1.85 can
+  build, as a consumer's lock would.
+- Pins lib-sync v0.1.6 and lib-engines v0.1.1, the releases that build with 1.85.
+
 ## [0.1.3]
 
 ### Added
