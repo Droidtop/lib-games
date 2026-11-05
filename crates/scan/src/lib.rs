@@ -57,7 +57,11 @@ pub struct Prefix {
 }
 
 /// One game the scan found, with what save lookups need.
+///
+/// Made with [`Found::new`] outside this crate, never as a literal, so a new
+/// field is not a breaking change (Droidtop/tracker#867).
 #[derive(Debug, Clone, Serialize)]
+#[non_exhaustive]
 pub struct Found {
     pub game: ScannedGame,
     /// The game's folder.
@@ -68,6 +72,19 @@ pub struct Found {
     /// (`renpy`, `unity`...), when the folder says.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub engine: Option<String>,
+    /// The game's other keys: the ids this scanner, or an older one, also
+    /// knows it by. An Epic game is `epic:<CatalogItemId>` with its
+    /// `epic:<AppName>` here (Droidtop/tracker#871); a program links each to
+    /// `game.key` so what it stored under the old key stays the same game.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub aliases: Vec<String>,
+}
+
+impl Found {
+    /// A game with only its library entry; set the rest on the result.
+    pub fn new(game: ScannedGame) -> Found {
+        Found { game, base: None, prefix: None, engine: None, aliases: Vec::new() }
+    }
 }
 
 /// A program whose state the agent can read or sync with: launchers,
@@ -225,6 +242,7 @@ pub fn pc_game(key: String, title: String, base: Option<PathBuf>, launcher: &str
         base,
         prefix: None,
         engine: None,
+        aliases: Vec::new(),
     }
 }
 

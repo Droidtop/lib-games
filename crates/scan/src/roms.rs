@@ -127,6 +127,7 @@ pub(super) fn system_roms(system: &str, dir: &Path, depth: usize, out: &mut Vec<
             base: path.parent().map(Path::to_path_buf),
             prefix: None,
             engine: None,
+            aliases: Vec::new(),
         });
     }
 }
