@@ -12,7 +12,7 @@ name = "droidtop_agent_scan"
 path = "src/lib.rs"
 
 [dependencies]
-droidtop-agent-core = { package = "sync-core", git = "https://github.com/Droidtop/lib-sync", tag = "v0.1.1" }
+droidtop-agent-core = { package = "sync-core", git = "https://github.com/Droidtop/lib-sync", tag = "v0.1.2" }
 serde.workspace = true
 serde_json.workspace = true
 # Heroic's and Lutris's YAML game configs.
