@@ -5,6 +5,13 @@ All notable changes to lib-games. Versions follow [Semantic Versioning](https://
 
 ## [Unreleased]
 
+## [0.4.0]
+
+### Changed
+- Pins lib-sync v0.2.0 (was v0.1.6). games-scan's interface carries sync-core's types (`ScannedGame`, `Install`,
+  `Marks`), so this is a new minor version. droidtop, droidtop-agent, lib-saves and lib-plugins move to lib-sync 0.2
+  together (Droidtop/tracker#573).
+
 ## [0.3.1]
 
 ### Changed
