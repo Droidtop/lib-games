@@ -7,9 +7,9 @@ version = "0.4.0"
 edition = "2021"
 license = "GPL-3.0-only"
 repository = "https://github.com/Droidtop/lib-games"
-# Pythia builds these crates with Ubuntu's rustc-1.85, as Launchpad does (its CI checks it), so
+# Pythia builds these crates with Ubuntu's rustc-1.91 (the newest versioned rustc in noble-updates and jammy-updates; owner, 2026-11-12), as Launchpad does (its CI checks it), so
 # nothing here may need a newer Rust; the msrv job checks it.
-rust-version = "1.85"
+rust-version = "1.91"
 
 [workspace.dependencies]
 # windowcast's device identity and pairing, used as they are (docs/DESIGN.md
